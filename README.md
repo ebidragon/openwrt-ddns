@@ -4,6 +4,11 @@
 ```bash
 git clone https://github.com/ebidragon/openwrt-ddns.git
 ```
+### update
+```bash
+cd openwrt-ddns
+git pull
+```
 
 ## Configuration
 ### .env
