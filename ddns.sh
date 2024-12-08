@@ -82,7 +82,7 @@ if [ -z "${NEWIP}" ]; then
       break
     fi
   done
-  NEWIP_RETRY="(${COUNT})"
+  NEWIP_RETRY="(retry:${COUNT})"
 fi
 if [ -z "${OLDIP}" ]; then
   COUNT=0
@@ -95,7 +95,7 @@ if [ -z "${OLDIP}" ]; then
       break
     fi
   done
-  OLDIP_RETRY="(${COUNT})"
+  OLDIP_RETRY="(retry:${COUNT})"
 fi
 CONTENT="NewIP: ${NEWIP}${NEWIP_RETRY}${CODETXT}\nOldIP: ${OLDIP}${OLDIP_RETRY}"
 if [ -n "${EXPIRES_NUM}" ]; then
@@ -150,8 +150,7 @@ WIFI0=`printf '%s(%s): %s' \`ubus call network.wireless status | jsonfilter -e '
 WIFI1=`printf '%s(%s): %s' \`ubus call network.wireless status | jsonfilter -e '@.radio1.interfaces[0].config.ssid' -e '@.radio1.config.band' -e '@.radio1.up'\``
 UPTIME=`uptime | sed -E 's/^[^,]*up *//; s/min/minutes/; s/([[:digit:]]+):0?([[:digit:]]+)/\1 hours, \2 minutes/'`
 CONTENT="${CONTENT}\n\n${WIFI0}, ${WIFI1}\n${UPTIME}"
-#TODO NEWIP_RETRY&OLDIP_RETRY DELETE
-if [ "${NEWIP}" != "${OLDIP}" ] || [ "${TIME}" -lt "0030" ] || [ -n "${NEWIP_RETRY}" ] || [ -n "${OLDIP_RETRY}" ]; then
+if [ "${NEWIP}" != "${OLDIP}" ] || [ "${TIME}" -lt "0030" ]; then
   curl --request POST \
     --url 'https://api.sendgrid.com/v3/mail/send' \
     --header 'Authorization: Bearer '"${MAIL_API_KEY}" \
