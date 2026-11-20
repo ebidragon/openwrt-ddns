@@ -151,9 +151,11 @@ WIFI1=`printf '%s(%s): %s' \`ubus call network.wireless status | jsonfilter -e '
 UPTIME=`uptime | sed -E 's/^[^,]*up *//; s/min/minutes/; s/([[:digit:]]+):0?([[:digit:]]+)/\1 hours, \2 minutes/'`
 CONTENT="${CONTENT}\n\n${WIFI0}, ${WIFI1}\n${UPTIME}"
 if [ "${NEWIP}" != "${OLDIP}" ] || [ "${TIME}" -lt "0030" ]; then
-  curl --request POST \
-    --url 'https://api.sendgrid.com/v3/mail/send' \
-    --header 'Authorization: Bearer '"${MAIL_API_KEY}" \
-    --header 'Content-Type: application/json' \
-    --data '{"personalizations": [{"to": [{"email": "'"${MAIL_TO}"'"}]}],"from": {"email": "'"${MAIL_FROM}"'"},"subject": "'"${SUBJECT}"'","content": [{"type": "text/plain","value": "'"${CONTENT}"'"}]}'
+  curl --silent \
+    --url "${SMTP_PROTO}://${SMTP_HOST}:${SMTP_PORT}" \
+    --ssl-reqd \
+    --mail-from "${MAIL_FROM}" \
+    --mail-rcpt "${MAIL_TO}" \
+    --user "${SMTP_USER}:${SMTP_PASS}" \
+    --upload-file <(echo -e "From: ${MAIL_FROM}\nTo: ${MAIL_TO}\nSubject: ${SUBJECT}\n\n${CONTENT}")
 fi
