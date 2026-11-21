@@ -151,11 +151,15 @@ WIFI1=`printf '%s(%s): %s' \`ubus call network.wireless status | jsonfilter -e '
 UPTIME=`uptime | sed -E 's/^[^,]*up *//; s/min/minutes/; s/([[:digit:]]+):0?([[:digit:]]+)/\1 hours, \2 minutes/'`
 CONTENT="${CONTENT}\n\n${WIFI0}, ${WIFI1}\n${UPTIME}"
 if [ "${NEWIP}" != "${OLDIP}" ] || [ "${TIME}" -lt "0030" ]; then
-  curl --silent \
-    --url "${SMTP_PROTO}://${SMTP_HOST}:${SMTP_PORT}" \
-    --ssl-reqd \
-    --mail-from "${MAIL_FROM}" \
-    --mail-rcpt "${MAIL_TO}" \
-    --user "${SMTP_USER}:${SMTP_PASS}" \
-    --upload-file <(echo -e "From: ${MAIL_FROM}\nTo: ${MAIL_TO}\nSubject: ${SUBJECT}\n\n${CONTENT}")
+  mailsend \
+    -to "${MAIL_TO}" \
+    -from "${MAIL_FROM}" \
+    -ssl \
+    -port "${SMTP_PORT}" \
+    -smtp "${SMTP_HOST}" \
+    -auth \
+    -user "${SMTP_USER}" \
+    -pass "${SMTP_PASS}" \
+    -sub "${SUBJECT}" \
+    -M "${CONTENT}" >/dev/null
 fi
