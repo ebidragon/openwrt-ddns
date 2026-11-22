@@ -161,5 +161,5 @@ if [ "${NEWIP}" != "${OLDIP}" ] || [ "${TIME}" -lt "0030" ]; then
     -user "${SMTP_USER}" \
     -pass "${SMTP_PASS}" \
     -sub "${SUBJECT}" \
-    -M "${CONTENT}" >/dev/null
+    -M "$(printf '%b' "${CONTENT}")" >/dev/null
 fi
